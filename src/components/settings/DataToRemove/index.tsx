@@ -3,14 +3,16 @@ import { Switch } from "@/components/ui/switch";
 import { useScreenStack } from "@/navigation/context";
 import { ArrowLeft, Info } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CookieOptions from "./CookieOptions";
 import { Label } from "@/components/ui/label"
+import type { DataSelection, DataTypeKey, PopupSettings } from "@/types/settings";
+import { getSettings, saveSettings } from "@/utils/storage";
 
 
-const dataItems = [
-    { key: "appCache", label: "App Cache", info: "Temporary data stored by installed apps." },
-    { key: "cache", label: "Cache", info: "Browser cache (images, scripts, etc)." },
+
+const dataItems: { key: DataTypeKey; label: string; info: string }[] = [
+    { key: "cache", label: "Cached Images and Files", info: "Browser cache (images, scripts, etc)." },
     { key: "cookies", label: "Cookies", info: "Stored login sessions, preferences, etc." },
     { key: "downloads", label: "Downloads", info: "Files listed in the download history." },
     { key: "fileSystems", label: "File Systems", info: "Storage used by web apps." },
@@ -23,32 +25,49 @@ const dataItems = [
     { key: "webSQL", label: "WebSQL", info: "Deprecated DB format still used by some sites." },
 ];
 
-const recommendedKeys = ["cache", "cookies", "history", "localStorage"];
+const recommendedKeys: DataTypeKey[] = ["cache", "cookies", "history", "localStorage"];
+
 
 const DataToRemove = () => {
     const { pop } = useScreenStack();
     const [showCookieOptions, setShowCookieOptions] = useState(false);
 
-
-    const [selected, setSelected] = useState<Record<string, boolean>>(
-        Object.fromEntries(dataItems.map((item) => [item.key, false]))
+    const [selected, setSelected] = useState<DataSelection>(
+        Object.fromEntries(dataItems.map((item) => [item.key, false])) as DataSelection
     );
 
-    const updateAll = (state: boolean) => {
-        const newState = Object.fromEntries(dataItems.map((item) => [item.key, state]));
-        setSelected(newState);
+    useEffect(() => {
+        getSettings<PopupSettings>("popupSettings").then((stored) => {
+            if (stored?.dataToRemove) {
+                setSelected(stored.dataToRemove);
+            }
+        });
+    }, []);
+
+    const updateAll = (value: boolean) => {
+        const updated: DataSelection = Object.fromEntries(
+            dataItems.map((item) => [item.key, value])
+        ) as DataSelection;
+
+        setSelected(updated);
+        saveSettings("popupSettings", { dataToRemove: updated });
     };
 
     const selectRecommended = () => {
-        const newState = Object.fromEntries(
-            dataItems.map((item) => [item.key, recommendedKeys.includes(item.key)])
-        );
-        setSelected(newState);
+        const updated: DataSelection = Object.fromEntries(
+            dataItems.map((item) => [item.key, recommendedKeys.includes(item.key as DataTypeKey)])
+        ) as DataSelection;
+
+        setSelected(updated);
+        saveSettings("popupSettings", { dataToRemove: updated });
     };
 
-    const toggleItem = (key: string, value: boolean) => {
-        setSelected((prev) => ({ ...prev, [key]: value }));
+    const toggleItem = (key: DataTypeKey, value: boolean) => {
+        const updated = { ...selected, [key]: value };
+        setSelected(updated);
+        saveSettings("popupSettings", { dataToRemove: updated });
     };
+
 
     return (
         <div className="space-y-4">

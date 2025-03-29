@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Neat Web",
+  "description": "Fast, focused browser data cleaner with advanced control.",
+  "version": "1.0.0",
+  "action": {
+    "default_popup": "src/index.html"
+
+  },
+  "permissions": [
+    "storage",
+    "browsingData",
+    "cookies",
+    "tabs",
+    "scripting"
+  ],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  }
+}

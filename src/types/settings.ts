@@ -1,71 +1,47 @@
-import { z } from "zod";
+export type DataTypeKey =
+  | "cache"
+  | "cookies"
+  | "downloads"
+  | "fileSystems"
+  | "formData"
+  | "history"
+  | "indexedDB"
+  | "localStorage"
+  | "pluginData"
+  | "passwords"
+  | "webSQL";
 
-export type PopupSettings = {
-  timePeriod: "hour" | "24hours" | "7days" | "30days" | "all";
-  cache: boolean;
-  cookies: boolean;
-  downloads: boolean;
-  history: boolean;
-  storage: boolean;
-  passwords: boolean;
-  darkMode: boolean;
-};
+export type DataSelection = Record<DataTypeKey, boolean>;
+export interface CookieFilterSettings {
+  mode: "whitelist" | "blacklist";
+  domains: string[];
+}
 
-export const popupSettingsSchema = z.object({
-  timePeriod: z.enum(["hour", "24hours", "7days", "30days", "all"]),
-  cache: z.boolean(),
-  cookies: z.boolean(),
-  downloads: z.boolean(),
-  history: z.boolean(),
-  storage: z.boolean(),
-  passwords: z.boolean(),
-  darkMode: z.boolean(),
-});
 
-export type OptionsSettings = {
-  autoReload: boolean;
-  floatingButton: boolean;
+export interface PopupSettings {
+  dataToRemove: DataSelection;
+  period?: string;
+  cookieFilter?: CookieFilterSettings;
+}
+
+
+export interface CommonSettings {
+  reloadTab: boolean;
   playAudio: boolean;
-  shortcut: boolean;
-  dataToRemove: {
-    appCache: boolean;
-    cache: boolean;
-    cookies: boolean;
-    downloads: boolean;
-    fileSystems: boolean;
-    formData: boolean;
-    history: boolean;
-    indexedDB: boolean;
-    localStorage: boolean;
-    pluginData: boolean;
-    passwords: boolean;
-    webSQL: boolean;
-  };
-  autoRemove: "Off" | "15 minutes" | "30 minutes" | "1 hour" | "2 hours" | "Clear When Chrome Starts";
-  timePeriod: "hour" | "24hours" | "7days" | "30days" | "all";
-  darkMode: boolean;
-};
+  enableShortcut: boolean;
+}
 
-export const optionsSettingsSchema = z.object({
-  autoReload: z.boolean(),
-  floatingButton: z.boolean(),
-  playAudio: z.boolean(),
-  shortcut: z.boolean(),
-  dataToRemove: z.object({
-    appCache: z.boolean(),
-    cache: z.boolean(),
-    cookies: z.boolean(),
-    downloads: z.boolean(),
-    fileSystems: z.boolean(),
-    formData: z.boolean(),
-    history: z.boolean(),
-    indexedDB: z.boolean(),
-    localStorage: z.boolean(),
-    pluginData: z.boolean(),
-    passwords: z.boolean(),
-    webSQL: z.boolean(),
-  }),
-  autoRemove: z.enum(["Off", "15 minutes", "30 minutes", "1 hour", "2 hours", "Clear When Chrome Starts"]),
-  timePeriod: z.enum(["hour", "24hours", "7days", "30days", "all"]),
-  darkMode: z.boolean(),
-});
+export type AutoCleanInterval =
+  | "off"
+  | "15m"
+  | "30m"
+  | "1h"
+  | "2h"
+  | "24h"
+  | "on_start"
+  | "on_tab_close";
+
+export interface AutoCleanSettings {
+  enabled: boolean;
+  interval: AutoCleanInterval;
+}

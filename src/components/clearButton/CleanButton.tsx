@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check } from "lucide-react";
+interface CleanButtonProps {
+    onClick: () => void;
+}
+
 
 const CircularLoader = () => {
     return (
@@ -21,13 +25,14 @@ const CircularLoader = () => {
     );
 };
 
-export const CleanButton = () => {
+export const CleanButton = ({ onClick }: CleanButtonProps) => {
     const [state, setState] = useState<"idle" | "cleaning" | "done">("idle");
 
-    const handleClick = () => {
+    const handleClick = async () => {
         if (state !== "idle") return;
 
         setState("cleaning");
+        await onClick();
 
         setTimeout(() => {
             setState("done");
