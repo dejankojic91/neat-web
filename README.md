@@ -1,54 +1,69 @@
-# React + TypeScript + Vite
+# 🧹 Neat Web — Clean Your Browser Like a Pro
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Neat Web** is a sleek, privacy-focused Chrome extension that gives you full control over your browser data with a beautifully minimal UI. Clear cache, cookies, downloads, and more — all in just a few clicks.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Features
 
-## Expanding the ESLint configuration
+- 🔥 **One-Click Clean** – Instantly clear cache, history, cookies, and more.
+- ⚙️ **Advanced Settings** – Select specific data types to remove: local storage, form data, indexedDB, etc.
+- 🌐 **Popup & Standalone Window** – Open the extension as a popup or in a full standalone tab.
+- 🧠 **Smart Domain Filtering** – Include/exclude specific domains when clearing cookies.
+- 🧽 **Auto-Clean Options** – Clean data automatically on browser start, tab close, or at intervals.
+- 🎯 **Customizable Shortcuts** – Enable quick access to actions via keyboard shortcuts.
+- 🧩 **Modern UI** – Built with React, Tailwind CSS, and shadcn/ui for a clean and responsive experience.
+- 🌙 **Dark Mode** – Always looks great in dark theme.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## 🛠️ Tech Stack
+
+- **React + TypeScript**
+- **Vite** (for fast development & build)
+- **Chrome Extension API**
+- **Tailwind CSS** for styling
+- **shadcn/ui** component library
+- **Lucide Icons** for clean visuals
+
+---
+
+## 🚀 Getting Started (Development)
+
+1. **Clone the repo**
+
+```bash
+git clone https://github.com/your-username/neat-web-extension.git
+cd neat-web-extension
+```
+2. **Install dependencies**
+
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+3. **Install dependencies**
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+npm run dev
 ```
+
+4. **Load into Chrome**
+
+- Open `chrome://extensions` in your browser
+- Enable **Developer Mode**
+- Click **Load unpacked**
+- Select the `dist` folder
+
+
+## Credits
+
+- Icons: [Lucide](https://lucide.dev/)
+- UI Library: [shadcn/ui](https://ui.shadcn.com/)
+- Developer: [Dejan Kojic](https://github.com/dejankojic)
+
+
+
+## 📄 License
+
+© 2025 [Dejan Kojic] — All rights reserved.
