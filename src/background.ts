@@ -43,11 +43,11 @@ chrome.runtime.onStartup.addListener(() => initAutoClean());
 
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === "auto-clean") {
-    console.log("⏰ Auto-clean alarm triggered");
+    console.log("Auto-clean alarm triggered");
     const popupSettings = await getSettings<PopupSettings>("popupSettings");
-    const autoSettings = await getSettings<AutoCleanSettings>("autoClean");
+    const autoSettings = await getSettings<AutoCleanSettings>("autoClean") ?? { interval: "off" };
 
-    const timePeriod = popupSettings.period || "1h"; // fallback
+    const timePeriod = popupSettings.period || "1h";
 
     if (autoSettings.interval !== "off") {
       await clearData(timePeriod, popupSettings.dataToRemove);
@@ -56,8 +56,8 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 });
 
 chrome.tabs.onRemoved.addListener(async () => {
-  const autoSettings = await getSettings<AutoCleanSettings>("autoClean");
-  if (autoSettings.interval === "on_tab_close") {
+  const autoSettings = await getSettings<AutoCleanSettings>("autoClean") ?? { interval: "off" };
+  if (autoSettings?.interval === "on_tab_close") {
     const popupSettings = await getSettings<PopupSettings>("popupSettings");
     const timePeriod = popupSettings.period || "1h";
     await clearData(timePeriod, popupSettings.dataToRemove);
@@ -67,7 +67,7 @@ chrome.tabs.onRemoved.addListener(async () => {
 async function initAutoClean() {
   chrome.alarms.clear("auto-clean");
 
-  const settings = await getSettings<AutoCleanSettings>("autoClean");
+  const settings = await getSettings<AutoCleanSettings>("autoClean") ?? { interval: "off" };
   if (!settings || settings.interval === "off") return;
 
   if (settings.interval === "on_start") {
@@ -93,7 +93,7 @@ if (Object.prototype.hasOwnProperty.call(timeBasedMap, settings.interval)) {
       delayInMinutes: 1,
     });
 
-    console.log(`🔔 Auto-clean set every ${periodInMinutes} minutes`);
+    console.log(`Auto-clean set every ${periodInMinutes} minutes`);
   }
 }
 }

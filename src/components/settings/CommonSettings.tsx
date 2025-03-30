@@ -97,18 +97,21 @@ const CommonSettings = () => {
 
             <div className="space-y-3">
                 {settings.map((item) => (
-                    <div key={item.key} className="flex justify-between items-center">
-                        <Label htmlFor={item.key} className="cursor-pointer">
-                            {item.label}
-                        </Label>
-                        <Switch
-                            id={item.key}
-                            checked={toggles[item.key as keyof SettingsType]}
-                            onCheckedChange={(val) =>
-                                updateToggle(item.key as keyof SettingsType, val as boolean)
-                            }
-                        />
+                    <div key={item.key} className="space-y-2">
+                        <div className="flex justify-between items-center px-2 py-2 rounded-md hover:bg-muted/50">
+                            <div className="flex items-center gap-1 text-sm">
+                                <Label htmlFor={item.key} className="cursor-pointer">{item.label}</Label>
+                            </div>
+                            <Switch
+                                id={item.key}
+                                checked={toggles[item.key as keyof SettingsType]}
+                                onCheckedChange={(val) =>
+                                    updateToggle(item.key as keyof SettingsType, val as boolean)
+                                }
+                            />
+                        </div>
                     </div>
+
                 ))}
             </div>
         </div>

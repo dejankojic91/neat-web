@@ -11,14 +11,13 @@ export const timeMap: Record<string, number> = {
 
 export const clearData = async (period: string, selection: DataSelection) => {
   const now = Date.now();
-  const since = period === "forever" ? 0 : now - (timeMap[period] ?? 0);
+  const since = timeMap[period] ?? 0;
 
   const removalOptions: chrome.browsingData.RemovalOptions = {
-    since,
+    since: period === "forever" ? 0 : now - since,
   };
 
   const dataToRemove: chrome.browsingData.DataTypeSet = {};
-
   const supported: Partial<Record<keyof DataSelection, keyof chrome.browsingData.DataTypeSet>> = {
     cache: "cache",
     cookies: "cookies",
@@ -41,39 +40,34 @@ export const clearData = async (period: string, selection: DataSelection) => {
 
   await chrome.browsingData.remove(removalOptions, dataToRemove);
 
-  if (selection.localStorage || selection.indexedDB) {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-    if (tab?.id) {
-      await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: () => {
-          if (window.location.protocol.startsWith("http")) {
-            if (localStorage) localStorage.clear();
-            if (indexedDB) {
-              indexedDB.databases?.().then((dbs) => {
-                dbs.forEach((db) => {
-                  if (db.name) indexedDB.deleteDatabase(db.name);
-                });
-              });
-            }
-            console.log("Cleared localStorage & IndexedDB on active tab.");
-          }
-        },
-      });
-    }
+  const url = tab?.url ?? "";
+  const isWebUrl = url.startsWith("http");
+
+  if ((selection.localStorage || selection.indexedDB) && tab?.id && isWebUrl) {
+    await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: () => {
+        if (localStorage) localStorage.clear();
+        if (indexedDB) {
+          indexedDB.databases?.().then((dbs) => {
+            dbs.forEach((db) => {
+              if (db.name) indexedDB.deleteDatabase(db.name);
+            });
+          });
+        }
+        console.log("Cleared localStorage & IndexedDB on active tab.");
+      },
+    });
   }
-    
-      if (selection.cookies) {
+
+  if (selection.cookies && isWebUrl) {
     const popupSettings = await getSettings<PopupSettings>("popupSettings");
     const filter = popupSettings.cookieFilter;
 
     if (filter && filter.domains.length > 0) {
-      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-
-      if (!tab?.url) return;
-
-      const currentDomain = new URL(tab.url).hostname;
+      const currentDomain = new URL(url).hostname;
 
       const shouldClear = filter.mode === "whitelist"
         ? filter.domains.includes(currentDomain)

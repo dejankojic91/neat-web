@@ -1,20 +1,16 @@
 
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-
-import CommonSettings from "../settings/CommonSettings";
-import DataToRemove from "../settings/DataToRemove";
-import AutoRemove from "../settings/AutoRemove";
 import { useScreenStack } from "@/navigation/context";
-import {TooltipProvider } from "@/components/ui/tooltip";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const AdvancedScreen = () => {
     const { push } = useScreenStack();
 
     const items = [
-        { title: "Common Settings", screen: <CommonSettings /> },
-        { title: "Data to Remove", screen: <DataToRemove /> },
-        { title: "Auto-remove Settings", screen: <AutoRemove /> },
+        { id: "common-settings", title: "Common Settings" },
+        { id: "data-to-remove", title: "Data to Remove" },
+        { id: "auto-remove", title: "Auto-remove Settings" },
     ];
 
     return (
@@ -26,7 +22,7 @@ const AdvancedScreen = () => {
                         type="button"
                         variant="outline"
                         className="w-full justify-between"
-                        onClick={() => push({ name: item.title, element: item.screen })}
+                        onClick={() => push({ id: item.id })}
                     >
                         {item.title}
                         <ArrowRight className="w-4 h-4" />

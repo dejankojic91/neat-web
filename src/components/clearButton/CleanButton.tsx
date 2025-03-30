@@ -47,7 +47,7 @@ export const CleanButton = ({ onClick }: CleanButtonProps) => {
         <motion.button
             onClick={handleClick}
             disabled={state !== "idle"}
-            className="relative w-32 h-32 rounded-full border-4 border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-md flex items-center justify-center transition hover:scale-[1.02] active:scale-95 group overflow-hidden"
+            className="relative w-32 h-32 rounded-full border-4 border-gray-300 dark:border-gray-700 bg-white dark:bg-[var(--card)] shadow-md flex items-center justify-center transition hover:scale-[1.02] active:scale-95 group overflow-hidden cursor-pointer"
         >
             {state === "cleaning" && <CircularLoader />}
 

@@ -105,11 +105,11 @@ const DataToRemove = () => {
                                         (options)
                                     </button>
                                 )}
-                                <Tooltip>
+                                <Tooltip delayDuration={100}>
                                     <TooltipTrigger asChild>
-                                        <Info className="w-4 h-4 text-muted-foreground cursor-help" />
+                                        <Info className="w-4 h-4 text-muted-foreground cursor-pointer" />
                                     </TooltipTrigger>
-                                    <TooltipContent side="right">
+                                    <TooltipContent side="top" align="start" className="max-w-[260px] break-words">
                                         <p className="max-w-xs text-xs">{item.info}</p>
                                     </TooltipContent>
                                 </Tooltip>

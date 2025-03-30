@@ -53,9 +53,11 @@ const AutoRemove = () => {
                 {options.map((opt) => (
                     <div key={opt.value} className="flex items-center space-x-2">
                         <RadioGroupItem value={opt.value} id={opt.value} />
-                        <Label htmlFor={opt.value} className="cursor-pointer">
-                            {opt.label}
-                        </Label>
+                        <div className="flex items-center gap-1 text-sm">
+                            <Label htmlFor={opt.value} className="cursor-pointer">
+                                {opt.label}
+                            </Label>
+                        </div>
                     </div>
                 ))}
             </RadioGroup>

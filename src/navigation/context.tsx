@@ -1,8 +1,7 @@
 import { createContext, useContext } from "react";
 
 export type Screen = {
-    name: string;
-    element: React.ReactNode;
+    id: string
 };
 
 export const ScreenStackContext = createContext<{
