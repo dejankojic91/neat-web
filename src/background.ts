@@ -1,6 +1,9 @@
 import { getSettings } from "./utils/storage";
 import { AutoCleanSettings, PopupSettings } from "./types/settings";
-import { clearData } from "./utils/clearData"; 
+import { clearData } from "./utils/clearData";
+
+const AUTO_CLEAN_ALARM = "auto-clean";
+const DEFAULT_PERIOD = "1h";
 
 chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
   if (message.action === "clearCookies") {
@@ -30,7 +33,7 @@ chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
       });
     });
 
-    return true;
+    return true; // needed for async sendResponse
   }
 
   if (message.action === "reinitAutoClean") {
@@ -38,44 +41,88 @@ chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
   }
 });
 
-chrome.runtime.onInstalled.addListener(() => initAutoClean());
-chrome.runtime.onStartup.addListener(() => initAutoClean());
+// Called when extension is installed or updated
+chrome.runtime.onInstalled.addListener(() => {
+  console.log("[Extension] Installed. Initializing auto-clean...");
+  initAutoClean();
+});
 
+// Called when Chrome starts
+chrome.runtime.onStartup.addListener(() => {
+  console.log("[Extension] Chrome started. Initializing auto-clean...");
+  initAutoClean();
+});
+
+// Triggered by the auto-clean alarm
 chrome.alarms.onAlarm.addListener(async (alarm) => {
-  if (alarm.name === "auto-clean") {
-    console.log("Auto-clean alarm triggered");
+  if (alarm.name === AUTO_CLEAN_ALARM) {
+    console.log("[AutoClean] Alarm triggered");
+
     const popupSettings = await getSettings<PopupSettings>("popupSettings");
-    const autoSettings = await getSettings<AutoCleanSettings>("autoClean") ?? { interval: "off" };
+    const autoSettings = (await getSettings<AutoCleanSettings>(
+      "autoClean"
+    )) ?? { interval: "off" };
 
-    const timePeriod = popupSettings.period || "1h";
+    const timePeriod = popupSettings?.period || DEFAULT_PERIOD;
+    const selection = popupSettings?.dataToRemove;
 
-    if (autoSettings.interval !== "off") {
-      await clearData(timePeriod, popupSettings.dataToRemove);
+    if (autoSettings.interval !== "off" && selection) {
+      console.log("[AutoClean] Running auto-clean...");
+      await clearData(timePeriod, selection);
+    } else {
+      console.log(
+        "[AutoClean] No action taken. Interval is 'off' or missing settings."
+      );
     }
   }
 });
 
+// Triggered when a tab is closed
 chrome.tabs.onRemoved.addListener(async () => {
-  const autoSettings = await getSettings<AutoCleanSettings>("autoClean") ?? { interval: "off" };
-  if (autoSettings?.interval === "on_tab_close") {
+  const autoSettings = (await getSettings<AutoCleanSettings>("autoClean")) ?? {
+    interval: "off",
+  };
+
+  if (autoSettings.interval === "on_tab_close") {
+    console.log("[AutoClean] Tab closed. Auto-clean triggered.");
+
     const popupSettings = await getSettings<PopupSettings>("popupSettings");
-    const timePeriod = popupSettings.period || "1h";
-    await clearData(timePeriod, popupSettings.dataToRemove);
+    const timePeriod = popupSettings?.period || DEFAULT_PERIOD;
+    const selection = popupSettings?.dataToRemove;
+
+    if (selection) {
+      await clearData(timePeriod, selection);
+    }
   }
 });
 
+// Initialization of the auto-clean logic
 async function initAutoClean() {
-  chrome.alarms.clear("auto-clean");
+  chrome.alarms.clear(AUTO_CLEAN_ALARM);
 
-  const settings = await getSettings<AutoCleanSettings>("autoClean") ?? { interval: "off" };
-  if (!settings || settings.interval === "off") return;
+  const autoSettings = (await getSettings<AutoCleanSettings>("autoClean")) ?? {
+    interval: "off",
+  };
 
-  if (settings.interval === "on_start") {
-    const popupSettings = await getSettings<PopupSettings>("popupSettings");
-    await clearData(popupSettings.period || "1h", popupSettings.dataToRemove);
+  if (!autoSettings || autoSettings.interval === "off") {
+    console.log("[AutoClean] Interval is off. No alarm set.");
     return;
   }
 
+  // Run immediately if configured for startup
+  if (autoSettings.interval === "on_start") {
+    const popupSettings = await getSettings<PopupSettings>("popupSettings");
+    const timePeriod = popupSettings?.period || DEFAULT_PERIOD;
+    const selection = popupSettings?.dataToRemove;
+
+    if (selection) {
+      console.log("[AutoClean] Triggered on startup");
+      await clearData(timePeriod, selection);
+    }
+    return;
+  }
+
+  // Time-based alarms
   const timeBasedMap = {
     "15m": 15,
     "30m": 30,
@@ -83,18 +130,20 @@ async function initAutoClean() {
     "2h": 120,
     "24h": 1440,
   } as const;
-    
-if (Object.prototype.hasOwnProperty.call(timeBasedMap, settings.interval)) {
-  const periodInMinutes = timeBasedMap[settings.interval as keyof typeof timeBasedMap];
 
-  if (periodInMinutes) {
-    chrome.alarms.create("auto-clean", {
+  if (
+    Object.prototype.hasOwnProperty.call(timeBasedMap, autoSettings.interval)
+  ) {
+    const periodInMinutes =
+      timeBasedMap[autoSettings.interval as keyof typeof timeBasedMap];
+
+    chrome.alarms.create(AUTO_CLEAN_ALARM, {
       periodInMinutes,
       delayInMinutes: 1,
     });
 
-    console.log(`Auto-clean set every ${periodInMinutes} minutes`);
+    console.log(`[AutoClean] Alarm set for every ${periodInMinutes} minutes`);
+  } else {
+    console.log("[AutoClean] Unknown interval:", autoSettings.interval);
   }
 }
-}
-

@@ -15,6 +15,3 @@ export const getScreenById = (id: string): React.ReactNode => {
       return null;
   }
 };
-
-
-

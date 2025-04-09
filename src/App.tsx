@@ -6,6 +6,8 @@ const App = () => {
   const params = new URLSearchParams(window.location.search);
   const initialTab = params.get("tab") || "clear";
 
+  console.log("initialTab", initialTab);
+
   return (
     <AppLayoutWithTabs activeTab={initialTab as "clear" | "advanced"}>
       {{

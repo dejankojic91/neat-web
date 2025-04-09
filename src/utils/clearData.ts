@@ -1,4 +1,6 @@
-import { DataSelection, PopupSettings } from "@/types/settings";
+import { DataSelection, PopupSettings, CommonSettings } from "@/types/settings";
+import type {  } from "@/types/settings";
+
 import { getSettings } from "./storage";
 
 export const timeMap: Record<string, number> = {
@@ -89,4 +91,21 @@ export const clearData = async (period: string, selection: DataSelection) => {
       }
     }
   }
+
+    const settings = await getSettings<CommonSettings>("commonSettings");
+
+    if (settings?.playAudio) {
+      const audio = new Audio(chrome.runtime.getURL("assets/trash-sound.mp3"));
+      audio.play();
+    }
+
+    if (settings?.reloadTab) {
+      const [tab] = await chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
+      if (tab?.id) {
+        chrome.tabs.reload(tab.id);
+      }
+    }
 };

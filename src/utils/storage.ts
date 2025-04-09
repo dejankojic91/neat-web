@@ -11,3 +11,17 @@ export const saveSettings = async <T>(key: string, value: T) => {
     chrome.storage.sync.set({ [key]: value }, () => resolve());
   });
 };
+
+const isValidTab = (value: "clear" | "advanced") => {
+  return value === "clear" || value === "advanced";
+};
+
+export const saveLastTab = async (tab: "clear" | "advanced") => {
+  await chrome.storage.local.set({ lastActiveTab: tab });
+};
+
+export const getLastTab = async (): Promise<"clear" | "advanced"> => {
+  const { lastActiveTab } = await chrome.storage.local.get("lastActiveTab");
+
+  return isValidTab(lastActiveTab) ? lastActiveTab : "clear";
+};

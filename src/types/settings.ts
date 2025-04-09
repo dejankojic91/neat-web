@@ -17,13 +17,11 @@ export interface CookieFilterSettings {
   domains: string[];
 }
 
-
 export interface PopupSettings {
   dataToRemove: DataSelection;
   period?: string;
   cookieFilter?: CookieFilterSettings;
 }
-
 
 export interface CommonSettings {
   reloadTab: boolean;

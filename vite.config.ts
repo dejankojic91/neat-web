@@ -4,27 +4,28 @@ import path from "path"
 import tailwindcss from "@tailwindcss/vite"
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(),],
-    resolve: {
+  plugins: [react(), tailwindcss()],
+  resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
 
-    build: {
+  build: {
     rollupOptions: {
-        input: {
+      input: {
         index: path.resolve(__dirname, "src/index.html"),
-        background: path.resolve(__dirname, 'src/background.ts'),
-        },
-            output: {
+        background: path.resolve(__dirname, "src/background.ts"),
+        content: path.resolve(__dirname, "src/content.ts"),
+      },
+      output: {
         entryFileNames: "[name].js",
         chunkFileNames: "[name].js",
         assetFileNames: "[name].[ext]",
       },
     },
     emptyOutDir: true,
-    target: 'esnext',
+    target: "esnext",
     minify: false,
   },
-})
+});
