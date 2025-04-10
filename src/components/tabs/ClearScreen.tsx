@@ -77,7 +77,7 @@ const ClearScreen = () => {
                     <Label htmlFor="time-period" className="text-sm flex items-center gap-1">
                         🕒 Clear data from...
                     </Label>
-                    <Select onValueChange={handlePeriodChange} defaultValue={period}>
+                    <Select onValueChange={handlePeriodChange} value={period}>
                         <SelectTrigger id="time-period" className="w-full">
                             <SelectValue placeholder="Select time period" />
                         </SelectTrigger>

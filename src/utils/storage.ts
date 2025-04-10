@@ -25,3 +25,7 @@ export const getLastTab = async (): Promise<"clear" | "advanced"> => {
 
   return isValidTab(lastActiveTab) ? lastActiveTab : "clear";
 };
+
+export const clearLastTab = async () => {
+  await chrome.storage.local.remove("lastActiveTab");
+};
